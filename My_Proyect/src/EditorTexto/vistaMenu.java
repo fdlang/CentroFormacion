@@ -5,28 +5,31 @@ import javax.swing.JMenu;
 import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
 
-public class vistaMenu extends JMenuBar{
-
+public class vistaMenu extends JMenuBar{   
+        
+    
     public vistaMenu() {
         JMenu menuInicio = new JMenu("Inicio");
-        JMenuItem[] itemInicio = new JMenuItem[5];        
+        JMenuItem[] itemInicio = new JMenuItem[5];
         String[] arrInicio = {"Nuevo","Nueva ventana","Abrir", "Guardar", "Guardar como"};
-            for (int i=0;i<itemInicio.length;i++)
-                itemInicio[i]= new JMenuItem(arrInicio[i]);                
-            for(int i=0;i<itemInicio.length;i++)
-                menuInicio.add(itemInicio[i]);
+        
+        for (int i=0;i<itemInicio.length;i++)
+            itemInicio[i]= new JMenuItem(arrInicio[i]);                
+        for(int i=0;i<itemInicio.length;i++)
+            menuInicio.add(itemInicio[i]);
         
         JMenu menuEditar = new JMenu("Editar");
-        JMenuItem[] itemEditar = new JMenuItem[5];
-        String[] arrEditar = {"Deshacer","Cortar","Copiar","Pegar","Buscar"};
-        for (int i = 0; i < arrEditar.length; i++)
-            itemEditar[i] = new JMenuItem(arrEditar[i]);
-        for (int i = 0; i < itemEditar.length; i++)
-            menuEditar.add(itemEditar[i]);
+        JMenuItem[] itemEditar =new JMenuItem[5];
+        String[] arrEditar = {"Deshacer","Cortar","Copiar","Pegar","Buscar"};       
+            for (int i = 0; i < arrEditar.length; i++)
+                itemEditar[i] = new JMenuItem(arrEditar[i]);
+            for (int i = 0; i < itemEditar.length; i++)
+                menuEditar.add(itemEditar[i]);
         
         JMenu menuTema = new JMenu("Temas");
         JMenuItem[] itemTema = new JMenuItem[2];
         String[] arrTema = {"Black", "White"};
+        
         for (int i=0;i<arrTema.length;i++) 
             itemTema[i] = new JMenuItem(arrTema[i]);
         for (int i=0;i<itemTema.length;i++)
@@ -42,4 +45,5 @@ public class vistaMenu extends JMenuBar{
         add(menuTalla);     
         menuTalla.add(tbox);
     }
+
 }
