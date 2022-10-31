@@ -13,7 +13,7 @@ import javax.swing.text.Caret;
 public class Controlador extends VistaPrincipal {
         
    private static Controlador ctl;
-   private Component contentPane;
+   Component contentPane;
    
        private Controlador() {
            if (ctl == null) {
@@ -27,12 +27,11 @@ public class Controlador extends VistaPrincipal {
        
        public void abrirChooser() {          
            //Creo el objeto JFileChooser
-           JFileChooser jcAbrir = new JFileChooser();
-           
+           JFileChooser jcAbrir = new JFileChooser();          
            //Indicamos lo que podemos seleccionar
            jcAbrir.setFileSelectionMode(JFileChooser.FILES_ONLY);
            //Creo el filtro
-           FileNameExtensionFilter filtro = new FileNameExtensionFilter("*.TXT", "txt");  
+           FileNameExtensionFilter filtro = new FileNameExtensionFilter("*.TXT", "txt");            
            //Aplico el filtro
            jcAbrir.setFileFilter(filtro);
            //Abro la ventana, guardo la opcion seleccionada por el usuario
@@ -53,12 +52,12 @@ public class Controlador extends VistaPrincipal {
                } catch (IOException e1) {
                    e1.printStackTrace();
                }                  
-           }      
-                                 
+           }                                      
        }
         
        public void guardarChooser() {
            JFileChooser jcGuardar = new JFileChooser();
+           
            jcGuardar.setFileSelectionMode(JFileChooser.FILES_ONLY);
            FileNameExtensionFilter filtro = new FileNameExtensionFilter(".TXT", ".txt");
            jcGuardar.setFileFilter(filtro);
@@ -92,7 +91,6 @@ public class Controlador extends VistaPrincipal {
                textoArea.moveCaretPosition(posicion + textoBuscar.length());
            }
        }
-       
        
 }       
     

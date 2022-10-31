@@ -26,6 +26,5 @@ public class VistaPrincipal extends JFrame{
                
         setContentPane(principal);
         setVisible(true); 
-    }
- 
+    } 
 }
