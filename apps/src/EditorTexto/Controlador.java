@@ -10,22 +10,11 @@ import javax.swing.JOptionPane;
 import javax.swing.filechooser.FileNameExtensionFilter;
 import javax.swing.text.Caret;
 
-public class Controlador extends VistaPrincipal {
-        
-   private static Controlador ctl;
-   Component contentPane;
-   
-       private Controlador() {
-           if (ctl == null) {
-               ctl = new Controlador();
-           }     
-       }
-      
-       public static Controlador getCtl(){
-           return ctl;
-       }
+public class Controlador extends VistaPrincipal {     
+   static Component contentPane;
+ 
        
-       public void abrirChooser() {          
+       public static void abrirChooser() {          
            //Creo el objeto JFileChooser
            JFileChooser jcAbrir = new JFileChooser();          
            //Indicamos lo que podemos seleccionar
@@ -55,7 +44,7 @@ public class Controlador extends VistaPrincipal {
            }                                      
        }
         
-       public void guardarChooser() {
+       public static void guardarChooser() {
            JFileChooser jcGuardar = new JFileChooser();
            
            jcGuardar.setFileSelectionMode(JFileChooser.FILES_ONLY);
@@ -74,7 +63,7 @@ public class Controlador extends VistaPrincipal {
                }
        }
        
-       public void buscarTexto() {
+       public static void buscarTexto() {
            String textoBuscar = JOptionPane.showInputDialog(textoArea, "Introduce texto a buscar");
            Caret selec = textoArea.getCaret();               
            // Dot es la primera posicion seleccionada y Mark la ultima posicion.   

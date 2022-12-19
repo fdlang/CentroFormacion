@@ -11,7 +11,7 @@ import javax.swing.JPanel;
 import javax.swing.JTextArea;
 
 public class VistaPrincipal extends JFrame{
-    JTextArea textoArea = new JTextArea();
+    static JTextArea textoArea = new JTextArea();
     
     public void frame() {
         setTitle("Editor de Texto");
