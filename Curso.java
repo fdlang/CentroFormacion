@@ -3,14 +3,14 @@ package CentroFormacion;
 import java.util.ArrayList;
 
 public class Curso {
-    private String cod; // Variable privada de tipo string que sera utilizada para el codigo del curso. 
+    private int cod; // Variable privada de tipo string que sera utilizada para el codigo del curso. 
     private String nombre; // Variable privada de tipo string que sera utilizada para el nombre del curso. 
     private String descrip; // Variable privada de tipo string que sera utilizada para la descripcion del curso. 
     private Profesor profesor; // Variable privada de tipo Objeto profesor que sera utilizada para el profesor del curso. 
     private ArrayList<Alumno> alumnos; // Variable privada de tipo arrayList<Alumno> que sera utilizada para los alumnos curso. 
      
 
-    public Curso(String cod, String nombre, String descrip, Profesor profesor, ArrayList<Alumno> alumnos) {
+    public Curso(int cod, String nombre, String descrip, Profesor profesor, ArrayList<Alumno> alumnos) {
         this.cod = cod;
         this.nombre = nombre;
         this.descrip = descrip;
@@ -23,7 +23,7 @@ public class Curso {
     	String toString = "";
     	toString += "\n----- CURSO Codigo: "+cod+" -----\n\n" + "Nombre: " + nombre + "\tDescripcion: " + descrip + "\n" + profesor;   	
     	if (alumnos.isEmpty()) // si el arrayList alumnos esta vacio imprime mensaje, en caso contrario muestra los alumnos asigandos.
-    		toString += "\n\nNo hay alumnos signados a este curso";
+    		toString += "\n\nNo hay alumnos asignados a este curso";
     	else {
     	    toString += "\n\nAlumnos asigandos:" + "\n ";
     		for (Alumno a:alumnos)
@@ -46,13 +46,10 @@ public class Curso {
     	return csv;
     }  
     
-    public String getCod() {
+    public int getCod() {
         return cod;
     }
 
-    public void setCod(String cod) {
-        this.cod = cod;
-    }
 
     public String getNombre() {
         return nombre;

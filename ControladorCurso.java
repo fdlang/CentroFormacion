@@ -11,6 +11,10 @@ import java.io.FileReader;
 import java.io.BufferedWriter;
 import java.io.BufferedReader;
 
+/**
+ * @author purri
+ *
+ */
 public class ControladorCurso {
     // Rutas de los ficheros "alumnos.bin", "profesores.bin" y "cursos.csv"
     private static File fA = new File("./datos/alumnos.bin");
@@ -71,7 +75,7 @@ public class ControladorCurso {
     public void alta() {
         Scanner sc = new Scanner(System.in);
         BufferedWriter bw = null;
-        String cod = newCodigo();
+        int cod = codigo(); // genera un codigo para el curso.
         
         System.out.print("¿Ha accedido a dar de alta Curso, desea continuar? S/N: ");
         String si = Utils.validarConfirmacion(sc.nextLine().trim());
@@ -91,13 +95,23 @@ public class ControladorCurso {
         		    return;
         		
         		System.out.print("Descripcion del curso: "); 
-        		String descrip = Utils.validarString(sc.nextLine().trim()); // valida que no se introduzca campos vacios, simbolos o numeros, si se introdice el campo 5 veces mal devulve errror.
-        		
+        		String descrip = sc.nextLine().trim(); 
+        		// mientras existan campos vacios pedira por pantalla la descripcion,  puede contener cualquier caracter, pero no campos vacios.
+                while(Utils.camposVacios(descrip)) {
+                    int vueltas = 0;
+                    vueltas++; // se suma 1 en cada vuelta del bucle.
+                    if (!Utils.intentos(vueltas)) // si comete 5 errores al introdocir los datos sera retornado al menu.
+                        return;
+                    System.out.println("\nNo puede haber campos vacios");
+                    System.out.print("Introduce descripcion del curso: ");
+                    descrip = sc.nextLine().trim();
+
+                } 
         		if(descrip.equals("error")) // si a devuelto error, se redirige al menu curso.
         		    return;
         		// condicion para comprobar si el curso exite, si no existe se crea nuevo objeto de tipo curso y se escribe como ficehro de texto.
         		// en caso contrario imprime mensaje avisando que se ha cancelado por que el curso ya existe.
-        		if (!comprobarCurso(nombre, descrip)) {  
+        		if (!comprobarCurso(nombre)) {  
         			Curso c = new Curso(cod, nombre, descrip, matricularProfesor(), matricularAlumnos());  
         			try {
         				bw = new BufferedWriter(new FileWriter(fC, true));
@@ -112,7 +126,7 @@ public class ControladorCurso {
         					e.printStackTrace();
         				}
         			}
-        		} else System.out.println("\nNo ha sido posible dar de alta \nEl Curso: " + nombre + ", descripcion: " + descrip +", ya existe.");
+        		} else System.out.println("\nNo ha sido posible dar de alta.\nEl Curso: " + nombre + ", ya existe.");
         	} else {
         		System.out.println("\nNo existen profesores dados de alta, es obligatorio para crear el curso.");
         		System.out.print("¿Quiere dar de alta a un nuevo Profesor? S/N: ");
@@ -160,7 +174,7 @@ public class ControladorCurso {
         				while (it.hasNext()) {
         					c = it.next();   
         					// Si los datos a comparar introducidos por el usuario son iguales se procede a confirmar su eliminacion.
-        					if (c.getCod().equalsIgnoreCase(datos)) {                        
+        					if (String.valueOf(c.getCod()).equalsIgnoreCase(datos)) {                        
         					    encontrado = true;
         						System.out.println(c);                                                 						
         						System.out.print("\n¿Estas seguro de borrar el curso? S/N : ");
@@ -208,11 +222,11 @@ public class ControladorCurso {
         	if (fC.exists() && (!tmp.isEmpty())) {  // comprueba si el fichero existe y no esta vacio.        		
         			System.out.print("Introduce el codigo del curso que desea modificar: ");
         			String entradaDatos = sc.nextLine().trim();
-        			
+
         			/* Bucle para recorrer el arraylist, si el codigo del objeto curso es igual que los datos pedidos porpantalla,
             		se pedira confirmacion para modificar. */
         			for (Curso c:tmp) 
-        				if (c.getCod().contentEquals(entradaDatos)) {
+        				if (String.valueOf(c.getCod()).equals(entradaDatos)) {
         					coincide = true;
         					System.out.print(c);             
         					
@@ -232,27 +246,42 @@ public class ControladorCurso {
         						// bucle para no salir del menu hasta que se presiona el numero 5.
         						do {
         						    System.out.println("\n¿Que campo desea modificar?\n");
-        							System.out.println("1. Nombre\t2. Descripcion\t3. Profesor \t4. Alumno\t5. Salir");
+        							System.out.println("1. Nombre\t2. Descripcion\t3. Profesor\t4. Alumno\t5. Guardar y Salir.\t6. Cancelar");
         							System.out.print("\nElige una opcion: "); 
         							String optt = sc.nextLine().trim();
         							
         							if(Utils.validarInt(optt)) {// condicion para validar si se a introducido un numero entero.
-        								if(Integer.parseInt(optt) <= 5) { // condicion para comprobar que la opcion introducida es la correcta.
+        								if(Integer.parseInt(optt) <= 6) { // condicion para comprobar que la opcion introducida es la correcta.
         									switch(Integer.parseInt(optt)) {
         									case 1:
         									    System.out.println("Ha seleccionado: Modificar nombre\n");
         										System.out.print("Introduzca nuevo Nombre: ");
         										nombre = Utils.validarString(sc.nextLine().trim()); // se valida que el campo introducido cumpla con los requisitos(sin campos vacios, no permite numeros ni simbolos, min 5caracteres max 18.)         
-        										
-        										if (!nombre.equalsIgnoreCase("error"))
-        										    System.out.println("Nombre modificado correctamente.\n");                        		
+        										/* se comprueba que el curso modificado no exista de ser asi modifica su campo de forma contraria 
+        										 * se imprime mensaje para informar que el usuario ya existe y no asido posible modificarlo*/
+                                                if (!comprobarCurso(nombre)) {
+                                                    if (!nombre.equalsIgnoreCase("error"))
+                                                        System.out.println("Nombre modificado correctamente.\n");                        		
+                                                }else { 
+                                                    nombre = "";
+                                                    System.out.println("\nNo ha sido posible modificar el nombre del curso con codigo: " + entradaDatos + ", El curso ya existe."); 
+                                                }
         										break;
         									case 2:
         									    System.out.println("Ha seleccionado: Modificar descripcion\n");
-        										System.out.print("Introduzca nueva descripcion: ");
-        										descripcion = Utils.validarString(sc.nextLine().trim()); // se valida que el campo introducido cumpla con los requisitos(sin campos vacios, no permite numeros ni simbolos, min 5caracteres max 18.)        
-        										
-        										if (!nombre.equalsIgnoreCase("error"))
+        										System.out.print("Introduzca nueva descripcion: ");     
+        										descripcion = sc.nextLine().trim(); 
+        							                // mientras existan campos vacios pedira por pantalla la descripcion,  puede contener cualquier caracter, pero no campos vacios.
+        							                while(Utils.camposVacios(descripcion)) {
+        							                    int vueltas = 0;
+        							                    vueltas++; // se suma 1 en cada vuelta del bucle.
+        							                    if (!Utils.intentos(vueltas)) // si comete 5 errores al introdocir los datos sera retornado al menu.
+        							                        return;
+        							                    System.out.println("\nNo puede haber campos vacios");
+        							                    System.out.print("Introduce descripcion del curso: ");
+        							                    descripcion = sc.nextLine().trim();
+        							                }
+        										//if (!nombre.equalsIgnoreCase("error"))
         										    System.out.println("Descripcion modificada correctamente.\n");                            	
         										break;
         									case 3:     
@@ -280,17 +309,14 @@ public class ControladorCurso {
         										            removeAlumnoCurso(c); // da de baja en el curso al alumno seleccionado.
         										           
         										            if (alumnos != null)                        
-        										                System.out.println("El alumno a sido dado de baja correctamente.\n");      										            
+        										                System.out.println("El alumno Ha sido dado de baja correctamente.\n");      										            
         										        }else if(Integer.parseInt(opt3) == 2) 
         										            return;     										        							        
         										    } else System.out.println("\nError, opcion no valida.\n");       										    
         										}else System.out.println("\nError, el campo no permite letras ni simbolos\nPrueba otra vez.\n"); 
         										break;
         									case 5:
-        										validar = true;
-        										/* Al salir se comprueba que el curso modificado no exista de ser asi modifica cada campo que se introdujo, de 
-        										 * forma contraria se imprime mensaje para informar que el usuario ya existe y no asido posible modificarlo*/
-        										if (!comprobarCurso(nombre, descripcion)) { 
+        										validar = true; 
         											if(nombre != "") 
         											    c.setNombre(nombre);                         			    
         											if(descripcion != "") 
@@ -308,8 +334,11 @@ public class ControladorCurso {
         						                     } catch (IOException e) {
         						                         e.printStackTrace();
         						                     }
-        										}else System.out.println("No ha sido posible modificar, el curso con codigo: " + entradaDatos + ", ya existe."); 
-        										break;             
+        										break; 
+        									case 6:
+        									    validar = true;
+                                                System.out.println("\nCancelado los cambios no fueron guardados.\n"); 
+                                                break;
         									}
         								} else System.out.println("\nDebe introducir una opcion valida, pruebe otra vez.");                     	
         							}else System.out.println("\nError, el campo no permite letras ni simbolos\nPrueba otra vez.\n"); 
@@ -376,7 +405,7 @@ public class ControladorCurso {
         				for(String s: tmp2) 
         					alumnos.add(ca.buscarAlumnoEX(s)); // retorna el objeto alumno que pretenezca al numero de expediente y lo añade al arraylist.       				     				       				      					       				
         			}
-        			cursos.add(new Curso (tmp[0],tmp[1],tmp[2],cp.buscarProfesorDni(tmp[3]),alumnos));        		
+        			cursos.add(new Curso (Integer.parseInt(tmp[0]),tmp[1],tmp[2],cp.buscarProfesorDni(tmp[3]),alumnos));        		
         		}       		  
         	} catch (Exception e) {
         		e.printStackTrace();
@@ -617,62 +646,39 @@ public class ControladorCurso {
     			System.out.println("Ha sido redirigido: ALTA AlUMNOS\n");
     			cA.alta();
     			return matricularAlumnos(); // retorna este metodo para inscribir el alumno creado si a si se desea.
-    		}else menu();
+    		}
         }
         return alumnado;
     }
     
+    
     /**
-     * Genera un Codigo identificatorio aleatorio no modificable
-     * 
-     * @param
-     * @return Un Codigo de 6 elementos alfanuméricos
+     * Metodo para generar un codigo(numero entero) correlativo al ultimo codigo existente.
+     * @return codigo, retona 1 si no existen cursos, si existe retornara el codigo generado.
      */
-    public String newCodigo() {
-        String chars = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz"; // Caracteres a utilizar para                                                                                        // conformar el Codigo
-        Random rnd = new Random(); // Instanciamos un objeto de tipo Random
-        StringBuilder sb = new StringBuilder(5); // Otorgamos una longitud al Codigo
-
-        for (int i = 0; i < 6; i++)
-            sb.append(chars.charAt(rnd.nextInt(chars.length()))); // Asignación de los caracteres anteriores
-                                                                  // aleatoriamente (hasta tener 6)
-        String codigo = sb.toString();
-        return codigo; // retornamos el codigo en un String
+    public int codigo() {
+        int cod = 1; // esta varibale se utiliza para generar el codigo correlativo de cada curso.
+        ArrayList<Curso> cursos = leerCursos(fC);
+        
+        // si el fichero curso existe, recorre los codigos en cursos y suma 1 al ultimo codigo.
+        if(fC.exists() && !cursos.isEmpty()) {      
+            cod = cursos.get(cursos.size() - 1).getCod() + 1;
+        }        
+        return cod;
     }
 
     /**
-     * Metodo para comprobar que no se repita un curso con el mismo nombre y descripcion
+     * Metodo para comprobar que no se repita un curso con el mismo nombre.
      * @param nombre
      * @param descrip
      * @return devuelve true si hay coincidencia o false en caso contrario
      */
-    public boolean comprobarCurso(String nombre, String descrip) {
-    	ArrayList<Curso> cursos = leerCursos(fC);
-        boolean existe = false;
-        
+    public boolean comprobarCurso(String nombre) {
+    	ArrayList<Curso> cursos = leerCursos(fC);       
         for (Curso c: cursos)
-            if(c.getNombre().equalsIgnoreCase(nombre) && c.getDescrip().equalsIgnoreCase(descrip))
-                existe = true;
-            else existe = false;         
-        return existe;
-    }
-    
-    /**
-     * Metodo para comprobar que no se pueda escribir un alumno al mismo curso.
-     * @param refAlumno, se pasa por parametros el expediente del alumno.
-     * @return devulve true si encontro coincidencia y false en caso contrario.
-     */
-    public boolean comprobarMatriculaAlumno(String refAlumno) {
-    	boolean existe = false;
-    	ControladorAlumno ca = new ControladorAlumno();
-    	ArrayList<Curso> cursos = leerCursos(fC);
-    	
-    	for (Curso c:cursos) 
-    		for (Alumno a:c.getAlumnos()) {
-    			if (a.getExpediente().equalsIgnoreCase(ca.validarExp(refAlumno)))
-    				existe = true;    		
-    		}
-    	return existe;
+            if(c.getNombre().equalsIgnoreCase(nombre)) 
+                return true;                              
+        return false;
     }
     
     /**
@@ -712,15 +718,26 @@ public class ControladorCurso {
      * @param dni
      * @return true si esta inscrito o false en caso contrario.
      */
-    public boolean inscripcionProfesor(String dni) {
+    public boolean comprobarInscripcionProfesor(String dni) {
         ArrayList<Curso> cursos = leerCursos(fC); // ArrayList de tipo curso carga todos los cursos existentes.
-        boolean existe = false;
         for (Curso c:cursos) 
            if(c.getProfesor().getDni().equalsIgnoreCase(dni))
-               existe = true;
-           else existe = false;    
-        return existe;   
+               return true;            
+        return false;   
     }
     
-    
+    /**
+     * Metodo para comprobar si el alumno esta inscrito en un curso su expediente no pueda ser modificado.
+     * @param refAlumno, se pasa por parametros el expediente del alumno.
+     * @return devuelve true si esta inscrito y false en caso contario.
+     */
+    public boolean comprobarInscripcionAlumno(String exp) {
+        ArrayList<Curso> cursos = leerCursos(fC); // ArrayList de tipo curso carga todos los cursos existentes.
+        for (Curso c:cursos) 
+            for(Alumno a: c.getAlumnos())
+               if(a.getExpediente().equalsIgnoreCase(exp))
+                   return true;  
+        return false;
+    }
+
 }

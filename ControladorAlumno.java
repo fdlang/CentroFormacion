@@ -272,7 +272,8 @@ public class ControladorAlumno {
         boolean coincide = false; // Variable para imprimir mensaje si no encuentra conincidencias.
         String inMod; // Variable para recoger datos por teclado para validar el modificado.  
         int vueltas = 1; // variable para controlar el numero de intentos que se permite fallar.
-        
+        ControladorCurso cc = new ControladorCurso(); // se crea objeto de tipo ControladorCurso para llamar al metodo que comprueba 
+                                                      // si el alumno esta inscrito en un curso.
         FileOutputStream fos = null;
         BufferedOutputStream bos = null;
         ObjectOutputStream out = null;
@@ -310,7 +311,7 @@ public class ControladorAlumno {
         					validar = false;
         					// bucle para no salir del menu hasta que se presiona el numero 7.
         					do {
-        						System.out.println("1. N. Expediente\t2. Nombre\t3. Apellidos\t4.Direccion \t5. Telefono\t6. Fecha Nacimiento\t7. Salir");
+        						System.out.println("1. N. Expediente\t2. Nombre\t3. Apellidos\t4.Direccion \t5. Telefono\t6. Fecha Nacimiento\t7. Salir y Guardar\t8. Cancelar");
         						System.out.print("\nElige una opcion: "); 
         						String optt = sc.nextLine().trim();
         						
@@ -318,18 +319,24 @@ public class ControladorAlumno {
                                     break;                                
         						                              
         						if(Utils.validarInt(optt)) {// condicion para validar si se a introducido un numero entero.
-        							if(Integer.parseInt(optt) <= 7) { // condicion para comprobar que la opcion introducida es la correcta.
+        							if(Integer.parseInt(optt) <= 8) { // condicion para comprobar que la opcion introducida es la correcta.
         								switch(Integer.parseInt(optt)) {
         								case 1: 
-        									System.out.print("Introduzca nuevo N. Expediente: ");
-        									exp = (validarExp(sc.nextLine().trim())); // se valida que el expediente introducido cumpla con los requisitos(5 caracteres numericos, sin espacios, sin campos vacios)        
-        									// mientras el expedinte introducido exista, pedira por pantalla que introduzca un expedinte nuevo y se validara que el nuevo expedinte se a introducido correctamente.
-        									while(comprobarExpediente(exp)) {
-        										System.out.println("\nEl N. Expediente " + exp + ", ya existe.");
-        										System.out.print("Introduzca otro N. Expediente: ");
-        										exp = validarExp(sc.nextLine().trim());
-        									}
-        									System.out.println("Expediente modificado correctamente.\n");
+        								    // se comprueba si el alumno esta inscrito en un curso, de ser asi no permitira la modificacion del expediente
+        								    // y mostrara un mensaje informativo por consola.
+        								    if(!cc.comprobarInscripcionAlumno(entradaDatos)) {
+        								        System.out.print("Introduzca nuevo N. Expediente: ");
+        								        exp = (validarExp(sc.nextLine().trim())); // se valida que el expediente introducido cumpla con los requisitos(5 caracteres numericos, sin espacios, sin campos vacios)        
+        								        // mientras el expedinte introducido exista, pedira por pantalla que introduzca un expedinte nuevo y se validara que el nuevo expedinte se a introducido correctamente.
+        								        while(comprobarExpediente(exp)) {
+        								            System.out.println("\nEl N. Expediente " + exp + ", ya existe.");
+        								            System.out.print("Introduzca otro N. Expediente: ");
+        								            exp = validarExp(sc.nextLine().trim());
+        								        }
+        								        System.out.println("Expediente modificado correctamente.\n");        
+        								    }else System.out.println("\nUps.. !! El alumno con expediente "+entradaDatos+" esta inscrito en un curso."
+        								            + "\nNo es posible modificar su expediente. \nElija otro campo a modificar:\n" );
+        								        
         									break;
         								case 2:
         									System.out.print("Introduzca nuevo Nombre: ");
@@ -352,15 +359,16 @@ public class ControladorAlumno {
         									System.out.print("Introduzca nueva Direccion: ");   
         									direccion = sc.nextLine().trim();
         									// mientras existan campos vacios pedira por pantalla la direccion, direccion puede contener cualquier caracter.
-        								    while(!Utils.camposVacios(direccion)) {
+        								    while(Utils.camposVacios(direccion)) {
+        								       System.out.println("vueltas: " + vueltas);
         								        vueltas++; // se suma 1 en cada vuelta del bucle.
-        								        if (Utils.intentos(vueltas)) // si comete 5 errores al introdocir los datos sera retornado al menu.
+        								        if (!Utils.intentos(vueltas)) // si comete 5 errores al introdocir los datos sera retornado al menu.
         								            return;
         						                System.out.println("\nNo puede haber campos vacios\n");
         						                System.out.print("Introduce direccion: ");
         						                direccion = sc.nextLine().trim();
         						            } 
-        									System.out.println("Direccion modificada correctamente.\n");
+        								    System.out.println("Direccion modificada correctamente.\n");
         									break;
         								case 5: 
         									System.out.print("Introduzca nuevo Telefono: ");
@@ -404,7 +412,11 @@ public class ControladorAlumno {
         										if(fch != "") 
         											a.setFecha(fch);  	
         									}else System.out.println("No ha sido posible modificar, el Alumno con N. Expediente: " + exp + ", ya existe."); 
-        									break;             
+        									break;  
+        								case 8:
+        								    validar = true;
+                                            System.out.println("\nCancelado los cambios no fueron guardados.\n"); 
+                                            break;
         								}
         							} else System.out.println("\nDebe introducir una opcion valida, pruebe otra vez.");                     	
         						}else vueltas++; // cada vez que se introuzca el campo mal la varibale vultas suma 1.		

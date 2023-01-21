@@ -194,7 +194,7 @@ public class ControladorProfesor {
         			String datos = validarDni(sc.nextLine().trim());                                                
         			
         			ControladorCurso cc = new ControladorCurso();
-        			if(!cc.inscripcionProfesor(datos)) { // si el profesor esta inscrito en un curso no se podra dar de baja y mosytrara un mensaje en pantalla.
+        			if(!cc.comprobarInscripcionProfesor(datos)) { // si el profesor esta inscrito en un curso no se podra dar de baja y mosytrara un mensaje en pantalla.
         			    Iterator<Profesor> it = tmp.iterator(); // SE CREA UN OBJETO DE LA CLASE ITERATOR DE TIPO profesor QUE CONTENDRA EL ARRAYLIST TMP
                         
                         /* MIENTRAS HAY CONTACTOS LOS RECORRE Y LOS GUARDA EN EL OBJETO DE LA CLASE profesor PARA POSTERIORMENTE SER COMPARADO
@@ -229,7 +229,7 @@ public class ControladorProfesor {
                         for (Profesor w : tmp)
                             out.writeObject(w);                   
                         out.close(); 
-        			}else System.out.println("\nEl profesor con dni: " + datos +", esta inscrito en un curso.\nDebe asignar otro profesor distinto al curso antes de borrarlo.\n");     		                                    
+        			}else System.out.println("\nUps.. !! El profesor con dni: " + datos +", esta inscrito en un curso.\nDebe asignar otro profesor distinto al curso antes de borrarlo.\n");     		                                    
         		} catch (Exception e) {
         			e.printStackTrace();
         		}               
@@ -249,6 +249,8 @@ public class ControladorProfesor {
         boolean coincide = false; // VARIABLE PARA IMPRIMIR MENSAJE SI NO ENCUENTRA COINCIDENCIAS.
         String inMod; // VARIABLE PARA RECOGER DATOS POR TECLADO PARA VALIDAR EL MODIFICADO.  
         int vueltas = 0;  // variable para controlar el numero de intentos que se permite fallar.
+        ControladorCurso cc = new ControladorCurso(); // se crea objeto de tipo ControladorCurso para llamar al metodo que comprueba 
+        // si el profesor esta inscrito en un curso.
         
         FileOutputStream fos = null;
         BufferedOutputStream bos = null;
@@ -289,7 +291,7 @@ public class ControladorProfesor {
         					validar = false;
         					// bucle para no salir del menu hasta que se presiona el numero 7.
         					do {
-        						System.out.println("1. Nombre\t2. Apellidos\t3.Direccion \t4. Telefono\t5. DNI\t6. Salir");
+        						System.out.println("1. Nombre\t2. Apellidos\t3.Direccion \t4. DNI\t5. Telefono\t6. Guardar y Salir \t7 Cancelar");
         						System.out.print("\nElige una opcion: "); 
         						String optt = sc.nextLine().trim();
         						
@@ -301,7 +303,7 @@ public class ControladorProfesor {
         									nombre = Utils.validarString(sc.nextLine()); // se valida que el campo introducido cumpla con los requisitos(sin campos vacios, no permite numeros ni simbolos, min 5caracteres max 15.)         
         									if(nombre.equals("error")) // si validarString devuelve error es por que se cometiron 5 intentos fallidos y sera retornonado al menu.
         									    return;
-        									System.out.println("\nNombre modificado correctamente");
+        									System.out.println("Nombre modificado correctamente\n");
         									break;
         								case 2:
         									System.out.print("Introduzca nuevos Apellidos: ");
@@ -309,7 +311,7 @@ public class ControladorProfesor {
         									
         									if(apellidos.equals("error")) // si validarString devuelve error es por que se cometiron 5 intentos fallidos y sera retornonado al menu.
         									    return;
-        									System.out.println("\nApellidos modificados correctamente");                            	
+        									System.out.println("Apellidos modificados correctamente\n");                            	
         									break;
         								case 3: 
         									System.out.print("Introduzca nueva Direccion: ");   
@@ -324,12 +326,15 @@ public class ControladorProfesor {
         										if(!Utils.intentos(vueltas))
         										    return;
         									} 
-        									System.out.println("\nDireccion modificada correctamente");                            	
+        									System.out.println("Direccion modificada correctamente\n");                            	
         									break;
         								case 4: 
-        									System.out.print("Introduzca nuevo DNI: ");
-        									dni = validarDni(sc.nextLine().trim()); 
-        									System.out.println("\nDNI modificado correctamente");                            	
+        								    if(!cc.comprobarInscripcionProfesor(entradaDatos)) {
+        								        System.out.print("Introduzca nuevo DNI: ");
+        								        dni = validarDni(sc.nextLine().trim()); 
+        								        System.out.println("DNI modificado correctamente\n");                            	       								        
+        								    }else System.out.println("\nUps.. !! El profesor con DNI "+entradaDatos+" esta inscrito en un curso."
+                                                    + "\nNo es posible modificar su DNI. \nElija otro campo a modificar:\n" );
         									break;
         								case 5:
         									System.out.print("Introduzca nuevo Telefono: ");
@@ -337,7 +342,7 @@ public class ControladorProfesor {
         									
         									if(telefono.equals("error")) // si validarString devuelve error es por que se cometiron 5 intentos fallidos y sera retornonado al menu.
         									    return;
-        									System.out.println("\nTelefono modificado correctamente");                            	
+        									System.out.println("Telefono modificado correctamente\n");                            	
         									break;
         								case 6:
         									validar = true;
@@ -354,8 +359,12 @@ public class ControladorProfesor {
         											p.setTelefono(telefono);  // se valida que el telefono introducido cumpla con los requisitos(no permite campos vacios, no permite letras ni simbolos, debe contener 9 caracteres numericos)                                                               										
         										if(dni != "") 
         											p.setDni(dni);      										
-        									}else System.out.println("No ha sido posible modificar, el Profesor con DNI: " + dni + ", ya existe."); 
-        									break;             
+        									}else System.out.println("\nNo ha sido posible modificar, el Profesor con DNI: " + dni + ", ya existe.\n"); 
+        									break; 
+        								case 7:
+        								    validar = true;
+        								    System.out.println("\nCancelado los cambios no fueron guardados.\n"); 
+        								    break;
         								}
         							} else System.out.println("\nDebe introducir una opcion valida, pruebe otra vez.");                     	
         						}else System.out.println("\nError, el campo no permite letras ni simbolos\nPrueba otra vez.\n"); 
