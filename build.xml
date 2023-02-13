@@ -1,0 +1,20 @@
+<?xml version="1.0"?>
+<project name="centro" default="menu">
+  
+  <target name="menu" depends="empaqueta">
+  </target>
+
+  <target name="empaqueta" depends="compila">
+    <jar destfile="centro.jar" basedir="./class" />
+  </target>
+
+  <target name="compila">
+    <mkdir dir="./class"/>
+    <javac srcdir="./src" destdir="./class"/>
+  </target>
+
+  <target name="clean">
+    <delete dir="./class"/>
+    <delete file="centro.jar"/>
+  </target>
+</project>
