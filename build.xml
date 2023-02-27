@@ -1,0 +1,37 @@
+<?xml version="1.0"?>
+<project name="centroFormacion" default="run">
+  
+  <target name="run" depends="empaqueta">
+  </target>
+
+  <target name="create">
+    <mkdir dir="./src"/>
+    <mkdir dir="./class"/>  
+    <mkdir dir="./jar"/>
+    <move todir="./src">
+        <fileset dir="./" includes= "**/*.java"/>
+    </move>
+  </target>
+  
+  <target name="compila" depends= "create">
+    <javac srcdir="./src" destdir="./class"/>
+  </target>
+
+  <target name="empaqueta" depends="compila">
+    <jar destfile="centroFormacion.jar" basedir="./class" />
+    <move todir="./jar">
+        <fileset dir="./" includes="*.jar"/>
+    </move>
+  </target>
+
+  <target name="default">
+    <move todir="./">
+        <fileset dir="./src/" includes="**/*.java"/>
+    </move>
+    <delete file="centroFormacion.jar"/>
+    <delete dir="./class"/>
+    <delete dir="./src"/>
+    <delete dir="./jar"/>
+  </target>
+
+</project>
