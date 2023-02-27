@@ -7,7 +7,7 @@
   <target name="create">
     <mkdir dir="./src"/>
     <mkdir dir="./class"/>  
-    <mkdir dir="./jar"/>
+    <mkdir dir="./lib"/>
     <move todir="./src">
         <fileset dir="./" includes= "**/*.java"/>
     </move>
@@ -19,7 +19,7 @@
 
   <target name="empaqueta" depends="compila">
     <jar destfile="centroFormacion.jar" basedir="./class" />
-    <move todir="./jar">
+    <move todir="./lib">
         <fileset dir="./" includes="*.jar"/>
     </move>
   </target>
@@ -31,7 +31,7 @@
     <delete file="centroFormacion.jar"/>
     <delete dir="./class"/>
     <delete dir="./src"/>
-    <delete dir="./jar"/>
+    <delete dir="./lib"/>
   </target>
 
 </project>
